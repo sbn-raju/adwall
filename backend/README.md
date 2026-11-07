@@ -1,138 +1,100 @@
-# Advertisement Marketplace Project
+<div align="center">
 
-Welcome to the **Advertisement Marketplace**, a platform that connects buyers and sellers of advertisement spaces like billboards and walls. This project is divided into two repositories: **Frontend** and **Backend**.
+<img src="../frontend/public/images/AdWall.png" alt="AdWall logo" width="150" />
 
----
+# AdWall · Backend
 
-## 🛠 Tech Stack
-- **Supabase** - Database management
-- **Node.js & Express** - Backend server and API development
-- **Cloudinary** - Image storage and management
-- **Razorpay** - Payment gateway integration
-- **JWT (JSON Web Tokens)** - Secure authentication and session management
-- **Cookies** - Storing JWT tokens securely on the client side
-- **Ngrok** - Tunneling for webhook testing with Razorpay
+Express REST API for the AdWall advertising-space marketplace.
 
----
+</div>
 
-## 🚀 Features
-### Backend Features
-1. **Authentication**
-   - User registration with roles (Buyer/Seller)
-   - Secure login/logout using JWT tokens
-2. **Buying & Selling Advertisement Spaces**
-   - Sellers can list available advertisement spaces (walls, billboards, etc.)
-   - Buyers can explore and purchase ad spaces
-3. **Payment Verification**
-   - Integration with Razorpay for secure transactions
-   - Webhook setup using Ngrok for testing payment success/failure callbacks
-4. **Cloudinary Storage**
-   - Efficient storage of uploaded advertisement space images
-5. **Order Tracking**
-   - Track the status and details of purchased advertisement spaces
+> For the full system overview, screenshots, data model and payment sequence diagram, see the [root README](../README.md).
 
-### Frontend Features
-- Responsive UI for buyers and sellers
-- Dynamic forms for ad space listings and purchases
-- Real-time updates on order status and payment verification
-- Interactive dashboard for sellers to manage their listings
+## Overview
 
----
+The API handles authentication, wall listings, rental orders and payment verification. It is a stateless Express service that:
 
-## 📂 Project Structure
-### Backend Repository
+- issues **JWTs** in an `httpOnly` cookie (`ad_wall`) and enforces **role-based access** (`buyer` / `seller`);
+- persists users, walls and orders in **Supabase (PostgreSQL)**;
+- stages uploads with **Multer** and hosts images on **Cloudinary**;
+- creates **Razorpay** orders and confirms payments through an **HMAC-SHA256-verified webhook**.
+
+## Tech Stack
+
+| Concern | Library |
+| --- | --- |
+| HTTP server | Express 4, `cors`, `cookie-parser` |
+| Database | `@supabase/supabase-js` |
+| Auth | `jsonwebtoken`, `bcryptjs` |
+| Uploads and media | `multer`, `cloudinary` |
+| Payments | `razorpay`, Node `crypto` (webhook signatures) |
+| Build | Babel (`@babel/preset-env`) → `dist/` |
+
+## Project Structure
+
 ```
-📂 backend
- ├── 📂 src
- │   ├── 📂 controllers
- │   ├── 📂 routes
- │   ├── 📂 models
- │   ├── 📂 middleware
- │   ├── 📂 utils
- ├── 📂 config
- ├── server.js
+src/
+├── index.js                     # App bootstrap, CORS, route mounting
+├── routes/                      # auth, product, order, razorpay, webhook routers
+├── controllers/                 # Request handlers and Supabase queries
+├── middleware/
+│   ├── auth.middleware.js       # Verifies JWT from the ad_wall cookie → req.user
+│   └── autho.middleware.js      # authorization(["seller"]) role guard
+├── helpers/
+│   ├── RazorPay.js              # Razorpay SDK client
+│   └── multer.js                # Disk storage for uploads
+└── database/db.connect.js       # Supabase client
 ```
 
-### Frontend Repository
+## API Endpoints
+
+Base path: `/api/v1.AdWall`
+
+| Method | Endpoint | Auth | Description |
+| --- | --- | --- | --- |
+| `POST` | `/auth/register` | – | Register a buyer or seller |
+| `POST` | `/auth/login` | – | Log in and set the auth cookie |
+| `GET` | `/product/list` | – | Paginated available walls |
+| `GET` | `/product/single` | – | Single wall by `product_id` |
+| `POST` | `/product/add` | Seller | Create a listing (multipart, field `image`) |
+| `GET` | `/product/seller/walls` | User | Seller's listings |
+| `GET` | `/product/seller/rented` | User | Seller's rented walls |
+| `GET` | `/product/rent-single` | User | Rented wall details |
+| `GET` | `/product/buyer/rented` | User | Buyer's paid rentals |
+| `GET` | `/order/list` | User | Buyer's transaction history |
+| `POST` | `/payment/create-order` | User | Create a Razorpay order and a pending order row |
+| `POST` | `/payment/place-order` | User | Client-side order acknowledgement |
+| `POST` | `/webhook/verify` | Razorpay signature | Handle `payment.captured` and mark the wall rented |
+
+List endpoints accept `page` and `limit` query parameters (default `1` and `10`).
+
+## Getting Started
+
+```bash
+npm install
+# create .env with the variables listed below
+npm run dev
 ```
-📂 frontend
- ├── 📂 src
- │   ├── 📂 components
- │   ├── 📂 pages
- │   ├── 📂 hooks
- │   ├── 📂 utils
- │   ├── App.js
-```
 
----
+### Environment Variables
 
-## 🔧 Installation & Setup
-### Backend
-1. Clone the backend repository:
-   ```bash
-   git clone <backend-repo-url>
-   ```
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Create a `.env` file with the following variables:
-   ```env
-   SUPABASE_URL=<your-supabase-url>
-   SUPABASE_KEY=<your-supabase-key>
-   CLOUDINARY_URL=<your-cloudinary-url>
-   RAZORPAY_KEY_ID=<your-razorpay-key-id>
-   RAZORPAY_KEY_SECRET=<your-razorpay-key-secret>
-   JWT_SECRET=<your-jwt-secret>
-   COOKIE_SECRET=<your-cookie-secret>
-   ```
-4. Start the server:
-   ```bash
-   npm start
-   ```
+| Variable | Description |
+| --- | --- |
+| `PORT` | HTTP port (the frontend expects `8080`) |
+| `SUPABASE_URI` / `SUPABASE_ANON_KEY` | Supabase project URL and key |
+| `JWT_TOKEN_KEY` | Secret used to sign JWTs |
+| `CLOUDINARY_CLOUD_NAME` / `CLOUDINARY_CLOUD_KEY_ID` / `CLOUDINARY_CLOUD_KEY_SECRET` | Cloudinary credentials |
+| `RAZOR_KEY_ID` / `RAZOR_KEY_SECRET` | Razorpay API keys |
+| `RAZOR_KEY_WEBHOOK` | Razorpay webhook secret, used for signature verification |
 
-### Frontend
-1. Clone the frontend repository:
-   ```bash
-   git clone <frontend-repo-url>
-   ```
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Create a `.env` file with the following variables:
-   ```env
-   VITE_API_URL=<your-backend-api-url>
-   ```
-4. Start the development server:
-   ```bash
-   npm run dev
-   ```
+### Scripts
 
----
+| Script | Description |
+| --- | --- |
+| `npm run dev` | Start with `nodemon` from `src/` |
+| `npm run build` | Transpile `src/` to `dist/` with Babel |
+| `npm start` | Run the compiled `dist/index.js` |
 
-## 📈 Future Scope and Improvements
-- **Enhanced Analytics:** Detailed insights for sellers about ad performance and views.
-- **User Reviews & Ratings:** Allow buyers to review ad spaces to help others make informed decisions.
-- **Automated Invoicing System:** Generating invoices for all successful purchases.
-- **AI-Driven Recommendations:** Suggesting ideal advertisement spaces based on buyer preferences.
-- **Advanced Search & Filters:** Improved search functionality for precise ad space selection.
-- **Multi-language Support:** Expanding reach to a global audience with localized content.
+### Webhooks in Local Development
 
----
-
-## 🤝 Contributing
-We welcome contributions! Feel free to fork the repo and submit pull requests for new features or bug fixes.
-
----
-
-## 📄 License
-This project is licensed under the **MIT License**.
-
----
-
-## 📬 Contact
-If you have any questions or suggestions, feel free to reach out.
-
-Happy Coding! 🚀
-
+Expose the server with `ngrok http 8080`, then register `https://<id>.ngrok-free.app/api/v1.AdWall/webhook/verify` in the Razorpay dashboard for the `payment.captured` event.

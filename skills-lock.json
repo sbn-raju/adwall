@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "skills": {
+    "chakra-ui-builder": {
+      "source": "chakra-ui/chakra-ui",
+      "ref": "main",
+      "sourceType": "github",
+      "skillPath": "skills/chakra-ui-builder/SKILL.md",
+      "computedHash": "b60b9f098afb4464df10f625bb8635e9567969d99f8b10012e1305ca988906bb"
+    },
+    "chakra-ui-migrate": {
+      "source": "chakra-ui/chakra-ui",
+      "ref": "main",
+      "sourceType": "github",
+      "skillPath": "skills/chakra-ui-migrate/SKILL.md",
+      "computedHash": "fc9b782572e8641aec8d13396b4d35d3b2bec45684c207fe5995d986e62b7fc2"
+    },
+    "chakra-ui-refactor": {
+      "source": "chakra-ui/chakra-ui",
+      "ref": "main",
+      "sourceType": "github",
+      "skillPath": "skills/chakra-ui-refactor/SKILL.md",
+      "computedHash": "3ff3aa78fdff4ea9f1b5e950e64c49c2cf428d78b4304bcc769898dd10db668b"
+    },
+    "cloudinary-docs": {
+      "source": "cloudinary-devs/skills",
+      "sourceType": "github",
+      "skillPath": "skills/platform/cloudinary-docs/SKILL.md",
+      "computedHash": "22a63ab2457f78910b2b3bbc62bdfcac9233f1ef06fab352b47ec46bf0ede0f0"
+    },
+    "cloudinary-next": {
+      "source": "cloudinary-devs/skills",
+      "sourceType": "github",
+      "skillPath": "skills/frameworks/cloudinary-next/SKILL.md",
+      "computedHash": "94021ea17698ae0bc82f5f3832c7f6cd40340f16b79e3a3fb4c26af1d219630c"
+    },
+    "cloudinary-react": {
+      "source": "cloudinary-devs/skills",
+      "sourceType": "github",
+      "skillPath": "skills/frameworks/cloudinary-react/SKILL.md",
+      "computedHash": "7f5549f669a6f9a7500266a8557582caeefa3e0e6bcd252cca3d21a6a7ddd4c2"
+    },
+    "cloudinary-upload": {
+      "source": "cloudinary-devs/skills",
+      "sourceType": "github",
+      "skillPath": "skills/platform/cloudinary-upload/SKILL.md",
+      "computedHash": "650fe14a0220ef2f27b645c5c2322c11e365091cf6186b79d9b0d8835ba25fa8"
+    },
+    "cloudinary-video": {
+      "source": "cloudinary-devs/skills",
+      "sourceType": "github",
+      "skillPath": "skills/platform/cloudinary-video/SKILL.md",
+      "computedHash": "225079e53f73b214230b02735aac490298c752f012c66edf733a1952cfda7ecc"
+    }
+  }
+}
