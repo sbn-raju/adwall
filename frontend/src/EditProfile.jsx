@@ -1,5 +1,7 @@
 import React, { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Alert, Box, Button, Card, Field, Input, Stack } from "@chakra-ui/react";
+import PageHeader from "./components/common/PageHeader";
+import BackButton from "./components/common/BackButton";
 
 export default function EditProfile() {
   const [formData, setFormData] = useState({
@@ -7,8 +9,6 @@ export default function EditProfile() {
     email: "",
     password: "",
   });
-
-  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -20,73 +20,52 @@ export default function EditProfile() {
     // Call API to update user profile
   };
 
-  //Navigateing back
-  const handleBack = ()=>{
-    navigate(-1);
-  }
-
-
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-white">
-        <p className="text-red-800 mb-1"><strong>NOTE*: </strong>This edit profile module is in development stage not fully developed.</p>
-        <p className="text-yellow-400 mb-1"><strong>INFO*: </strong>Your can press back button inside the form to go back !!</p>
-      <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-md">
-        <h2 className="text-2xl font-bold text-center mb-4">Edit Profile</h2>
-        
-        <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-        <button onClick={handleBack} className="py-2 px-6 mb-2 bg-orange-400 hover:bg-orange-500 rounded-md">
-          Back
-        </button>
-      </div>
-          {/* Change Name */}
-          <div>
-            <label className="block text-gray-400 mb-1">Name</label>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              placeholder="Enter new name"
-              className="w-full p-2 rounded-md bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
+    <Box maxW="xl">
+      <BackButton mb={4} />
+      <PageHeader title="Edit Profile" description="Update your name, email or password." />
 
-          {/* Change Email */}
-          <div>
-            <label className="block text-gray-400 mb-1">Email</label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="Enter new email"
-              className="w-full p-2 rounded-md bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
+      <Alert.Root status="warning" mb={6} rounded="lg">
+        <Alert.Indicator />
+        <Alert.Content>
+          <Alert.Title>In development</Alert.Title>
+          <Alert.Description>This edit profile module is in development stage and not fully developed yet.</Alert.Description>
+        </Alert.Content>
+      </Alert.Root>
 
-          {/* Change Password */}
-          <div>
-            <label className="block text-gray-400 mb-1">Password</label>
-            <input
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              placeholder="Enter new password"
-              className="w-full p-2 rounded-md bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
+      <Card.Root variant="outline" bg="bg.panel">
+        <Card.Body>
+          <form onSubmit={handleSubmit}>
+            <Stack gap={5}>
+              <Field.Root>
+                <Field.Label>Name</Field.Label>
+                <Input type="text" name="name" value={formData.name} onChange={handleChange} placeholder="Enter new name" autoComplete="name" />
+              </Field.Root>
 
-          {/* Submit Button */}
-          <button
-            type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md font-semibold transition duration-300"
-          >
-            Save Changes
-          </button>
-        </form>
-      </div>
-    </div>
+              <Field.Root>
+                <Field.Label>Email</Field.Label>
+                <Input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="Enter new email" autoComplete="email" />
+              </Field.Root>
+
+              <Field.Root>
+                <Field.Label>Password</Field.Label>
+                <Input
+                  type="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="Enter new password"
+                  autoComplete="new-password"
+                />
+              </Field.Root>
+
+              <Button type="submit" colorPalette="brand" size="lg">
+                Save Changes
+              </Button>
+            </Stack>
+          </form>
+        </Card.Body>
+      </Card.Root>
+    </Box>
   );
 }

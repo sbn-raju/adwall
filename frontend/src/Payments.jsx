@@ -1,8 +1,24 @@
 import React, { useEffect, useState } from "react";
+import {
+  Box,
+  Button,
+  Card,
+  Container,
+  DataList,
+  Grid,
+  Heading,
+  Image,
+  Separator,
+  Stack,
+  Text,
+} from "@chakra-ui/react";
+import { Lock } from "lucide-react";
+import toast from "react-hot-toast";
+import { useLocation, useParams } from "react-router-dom";
 import Loader from "./components/Loader";
 import BASE_URI from "./utils/base_uri";
-import toast from "react-hot-toast";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import AvailabilityBadge from "./components/common/AvailabilityBadge";
+import BackButton from "./components/common/BackButton";
 
 const Payments = () => {
   // States for operations
@@ -10,7 +26,6 @@ const Payments = () => {
   const [order, setOrder] = useState(null);
   const [amount, setAmount] = useState(0);
   const [product, setProduct] = useState([]);
-  const navigate = useNavigate();
 
   // Getting data from location state
   const location = useLocation();
@@ -85,7 +100,7 @@ const Payments = () => {
       address: "Razorpay",
     },
     theme: {
-      color: "#3399cc",
+      color: "#fe5f11",
     },
   };
 
@@ -112,63 +127,80 @@ const Payments = () => {
     }
   }, [amount]);
 
-
-  const handleBack = (e) =>{
-    navigate(-1);
-}
-
   if (isLoading) {
-    return <Loader />;
+    return <Loader label="Preparing your order…" />;
   }
 
   return (
-    <div className="w-full min-h-screen bg-gray-900 flex flex-col md:flex-row items-center justify-center p-6">
-      {/* Left Container - Product Details */}
-      
-      <div className="bg-gray-800 shadow-lg rounded-lg max-w-3xl w-full p-6 text-white md:w-2/3">
-      <div>
-        <button onClick={handleBack} className="py-2 px-6 mb-2 bg-orange-400 hover:bg-orange-500 rounded-md">
-          Back
-        </button>
-      </div>
-        
-        <img
-          src={product.image_link}
-          alt={product.name}
-          className="w-full h-64 object-cover rounded-lg mt-4"
-        />
-        <h1 className="text-3xl font-bold mb-3 mt-3">{product.name}</h1>
-        <p className="text-lg mb-2">{product.description}</p>
-        <p>
-          <strong>Location:</strong> {product.location}
-        </p>
-        <p>
-          <strong>Dimensions:</strong> {product.dimension}
-        </p>
-      </div>
+    <Container maxW="6xl" py={{ base: 8, md: 12 }}>
+      <BackButton mb={6} />
+      <Grid templateColumns={{ base: "1fr", md: "1fr 360px" }} gap={6} alignItems="start">
+        {/* Product Details */}
+        <Card.Root variant="outline" bg="bg.panel" overflow="hidden">
+          <Image src={product.image_link} alt={product.name} w="full" h={{ base: 56, md: 72 }} objectFit="cover" bg="bg.muted" />
+          <Card.Body gap={4}>
+            <Heading as="h1" size="2xl" letterSpacing="tight">
+              {product.name}
+            </Heading>
+            <Text color="fg.muted" textStyle="lg">
+              {product.description}
+            </Text>
+            <DataList.Root orientation="horizontal">
+              <DataList.Item>
+                <DataList.ItemLabel>Location</DataList.ItemLabel>
+                <DataList.ItemValue>{product.location}</DataList.ItemValue>
+              </DataList.Item>
+              <DataList.Item>
+                <DataList.ItemLabel>Dimensions</DataList.ItemLabel>
+                <DataList.ItemValue>{product.dimension}</DataList.ItemValue>
+              </DataList.Item>
+            </DataList.Root>
+          </Card.Body>
+        </Card.Root>
 
-      {/* Right Container - Availability & Payment */}
-      <div className="bg-gray-800 shadow-lg rounded-lg max-w-sm w-full p-6 mt-6 md:mt-0 md:ml-6 text-white flex flex-col justify-center items-center">
-        <p
-          className={`w-1/2 text-center px-2 py-1 rounded-full font-semibold ${
-            !product.is_available
-              ? "text-red-600 bg-red-200"
-              : "text-green-600 bg-green-200"
-          }`}
-        >
-          {!product.is_available ? "Not Available" : "Available"}
-        </p>
-
-        <p className="text-2xl font-bold mt-4">₹ {product.price}</p>
-
-        <button
-          onClick={openPopup}
-          className="mt-6 bg-amber-500 px-6 py-3 text-lg font-bold rounded-lg hover:bg-amber-600 transition duration-300"
-        >
-          Pay Now
-        </button>
-      </div>
-    </div>
+        {/* Order summary */}
+        <Card.Root variant="outline" bg="bg.panel" position={{ md: "sticky" }} top={{ md: "88px" }}>
+          <Card.Header>
+            <Heading as="h2" size="lg">
+              Order summary
+            </Heading>
+          </Card.Header>
+          <Card.Body gap={4}>
+            <Box>
+              <AvailabilityBadge available={!!product.is_available} />
+            </Box>
+            {name && (
+              <DataList.Root size="sm">
+                <DataList.Item>
+                  <DataList.ItemLabel>Billed to</DataList.ItemLabel>
+                  <DataList.ItemValue>
+                    <Stack gap={0}>
+                      <Text>{name}</Text>
+                      <Text color="fg.muted">{email}</Text>
+                    </Stack>
+                  </DataList.ItemValue>
+                </DataList.Item>
+              </DataList.Root>
+            )}
+            <Separator />
+            <Stack direction="row" justify="space-between" align="baseline">
+              <Text color="fg.muted">Total</Text>
+              <Text textStyle="2xl" fontWeight="bold">
+                ₹ {product.price}
+              </Text>
+            </Stack>
+          </Card.Body>
+          <Card.Footer flexDirection="column" gap={3}>
+            <Button colorPalette="brand" size="lg" w="full" onClick={openPopup} disabled={!order?.id}>
+              <Lock /> Pay Now
+            </Button>
+            <Text textStyle="xs" color="fg.subtle" textAlign="center">
+              Payments are processed securely by Razorpay.
+            </Text>
+          </Card.Footer>
+        </Card.Root>
+      </Grid>
+    </Container>
   );
 };
 

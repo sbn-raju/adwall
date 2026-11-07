@@ -74,9 +74,9 @@ const App = () => {
           <Route
             path="/"
             element={
-              <PrivateRoute>
+              // <PrivateRoute>
                 <DashboardLayout />
-              </PrivateRoute>
+              // </PrivateRoute>
             }
           >
             <Route path="/buyer/dashboard" element={<BuyerDashboard />} />
@@ -141,7 +141,19 @@ const App = () => {
           <Route path="*" element={<Error />} />
         </Routes>
 
-        <Toaster position="top-center" />
+        <Toaster
+          position="top-center"
+          toastOptions={{
+            style: {
+              background: "var(--chakra-colors-bg-panel)",
+              color: "var(--chakra-colors-fg)",
+              border: "1px solid var(--chakra-colors-border)",
+              borderRadius: "var(--chakra-radii-lg)",
+              boxShadow: "var(--chakra-shadows-lg)",
+              fontFamily: "var(--chakra-fonts-body)",
+            },
+          }}
+        />
       </Suspense>
     </Router>
   );

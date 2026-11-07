@@ -1,67 +1,84 @@
 import React from "react";
-import { Star, UserCircle2 } from "lucide-react";
-import { motion } from "framer-motion";
+import { Avatar, Box, Card, Heading, HStack, RatingGroup, SimpleGrid, Stack, Text } from "@chakra-ui/react";
+import { Quote } from "lucide-react";
 
-const TestimonialCard = ({ testimonial }) => {
-  return (
-    <motion.div whileHover={{ scale: 1.05 }} className="max-w-md mx-auto">
-      <div className="p-6 bg-gray-800 shadow-lg rounded-2xl border ">
-        <div className="flex flex-col items-center text-center">
-          <div className="w-16 h-16 mb-4">
-            {testimonial.image ? (
-              <img src={testimonial.image} alt={testimonial.name} className="w-16 h-16 rounded-full" />
-            ) : (
-              <UserCircle2 className="w-16 h-16 text-white" />
-            )}
-          </div>
-          <h3 className="text-lg font-semibold text-white">{testimonial.name}</h3>
-          <p className="text-sm text-white">{testimonial.role}</p>
-          <div className="flex gap-1 mt-2 text-yellow-500">
-            {[...Array(5)].map((_, index) => (
-              <Star key={index} className="w-5 h-5" fill={index < testimonial.rating ? "#facc15" : "none"} stroke="#facc15" />
-            ))}
-          </div>
-          <p className="mt-4 text-white">"{testimonial.review}"</p>
-        </div>
-      </div>
-    </motion.div>
-  );
-};
+const testimonials = [
+  {
+    name: "John Doe",
+    role: "Marketing Manager",
+    image: "https://randomuser.me/api/portraits/men/32.jpg",
+    rating: 5,
+    review: "This advertising service boosted our business visibility tremendously! Highly recommended!",
+  },
+  {
+    name: "Jane Smith",
+    role: "CEO, Brandify",
+    image: "https://randomuser.me/api/portraits/women/44.jpg",
+    rating: 4,
+    review: "Great service and fantastic results. Will definitely use again!",
+  },
+  {
+    name: "Pushpa",
+    role: "CEO, RedWood Sindicate",
+    image: "https://randomuser.me/api/portraits/men/40.jpg",
+    rating: 3,
+    review: "This advertising service boosted our business visibility tremendously! Highly recommended!",
+  },
+];
+
+const TestimonialCard = ({ testimonial }) => (
+  <Card.Root
+    variant="outline"
+    bg="bg.panel"
+    h="full"
+    transition="transform 0.2s ease, box-shadow 0.2s ease"
+    _hover={{ transform: "translateY(-4px)", shadow: "lg" }}
+  >
+    <Card.Body gap={5}>
+      <Box color="brand.solid">
+        <Quote size={28} />
+      </Box>
+      <Text textStyle="md" flex="1">
+        “{testimonial.review}”
+      </Text>
+      <RatingGroup.Root readOnly count={5} value={testimonial.rating} size="sm" colorPalette="yellow" aria-label={`Rated ${testimonial.rating} out of 5`}>
+        <RatingGroup.HiddenInput />
+        <RatingGroup.Control />
+      </RatingGroup.Root>
+    </Card.Body>
+    <Card.Footer>
+      <HStack gap={3}>
+        <Avatar.Root size="md">
+          <Avatar.Fallback name={testimonial.name} />
+          {testimonial.image && <Avatar.Image src={testimonial.image} alt="" />}
+        </Avatar.Root>
+        <Stack gap={0}>
+          <Text fontWeight="semibold">{testimonial.name}</Text>
+          <Text textStyle="sm" color="fg.muted">
+            {testimonial.role}
+          </Text>
+        </Stack>
+      </HStack>
+    </Card.Footer>
+  </Card.Root>
+);
 
 export default function Testimonials() {
-  const testimonials = [
-    {
-      name: "John Doe",
-      role: "Marketing Manager",
-      image: "https://randomuser.me/api/portraits/men/32.jpg",
-      rating: 5,
-      review: "This advertising service boosted our business visibility tremendously! Highly recommended!"
-    },
-    {
-      name: "Jane Smith",
-      role: "CEO, Brandify",
-      image: "https://randomuser.me/api/portraits/women/44.jpg",
-      rating: 4,
-      review: "Great service and fantastic results. Will definitely use again!"
-    },
-    {
-        name: "Pushpa",
-        role: "CEO, RedWood Sindicate",
-        image: "https://randomuser.me/api/portraits/men/40.jpg",
-        rating: 3,
-        review: "This advertising service boosted our business visibility tremendously! Highly recommended!"
-      },
-  ];
-
   return (
-    <>
-    <h2 className="text-2xl font-semibold text-center text-white">Testimonials</h2>
-    <div className="px-5 bg-gray-900 flex flex-wrap justify-center gap-6 flex-row">
-       
-      {testimonials.map((testimonial, index) => (
-        <TestimonialCard key={index} testimonial={testimonial} />
-      ))}
-    </div>
-    </>
+    <Box as="section" aria-labelledby="testimonials-heading">
+      <Stack gap={2} textAlign="center" mb={10}>
+        <Text textStyle="xs" fontWeight="semibold" letterSpacing="wider" textTransform="uppercase" color="brand.fg">
+          Testimonials
+        </Text>
+        <Heading id="testimonials-heading" as="h2" size="3xl" letterSpacing="tight">
+          Loved by advertisers
+        </Heading>
+      </Stack>
+      <SimpleGrid columns={{ base: 1, md: 3 }} gap={6}>
+        {testimonials.map((testimonial, index) => (
+          <TestimonialCard key={index} testimonial={testimonial} />
+        ))}
+      </SimpleGrid>
+    </Box>
   );
 }

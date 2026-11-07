@@ -1,17 +1,33 @@
 import React from "react";
+import { Button, Center, Heading, Stack, Text } from "@chakra-ui/react";
+import { Home } from "lucide-react";
+import { Link as RouterLink } from "react-router-dom";
 
 export default function Error() {
-    return (
-      <div className="flex flex-col items-center justify-center h-screen bg-gray-900  text-white">
-        <h1 className="text-6xl font-bold">404</h1>
-        <p className="text-xl mt-4">Oops! The page you're looking for doesn't exist.</p>
-        <a
-          href="/home"
-          className="mt-6 px-6 py-3 bg-orange-400 text-white rounded-lg shadow-md hover:bg-orange-500 transition"
+  return (
+    <Center minH="100vh" bg="bg" px={4}>
+      <Stack gap={4} align="center" textAlign="center">
+        <Heading
+          as="h1"
+          fontSize={{ base: "7xl", md: "9xl" }}
+          fontWeight="extrabold"
+          lineHeight="1"
+          bgGradient="to-r"
+          gradientFrom="brand.600"
+          gradientTo="brand.300"
+          bgClip="text"
         >
-          Go Home
-        </a>
-      </div>
-    );
-  }
-  
+          404
+        </Heading>
+        <Text textStyle="xl" color="fg.muted">
+          Oops! The page you're looking for doesn't exist.
+        </Text>
+        <Button asChild colorPalette="brand" size="lg" mt={2}>
+          <RouterLink to="/home">
+            <Home /> Go Home
+          </RouterLink>
+        </Button>
+      </Stack>
+    </Center>
+  );
+}

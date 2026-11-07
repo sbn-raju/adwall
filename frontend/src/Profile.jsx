@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
+import { Avatar, Badge, Box, Button, Card, DataList, Heading, HStack, Stack } from "@chakra-ui/react";
+import { Mail, Briefcase, Pencil } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { UserCircle, Mail, Briefcase, Pencil } from "lucide-react";
+import Loader from "./components/Loader";
+import PageHeader from "./components/common/PageHeader";
 
 export default function Profile() {
   const [user, setUser] = useState(null);
@@ -9,45 +12,66 @@ export default function Profile() {
   useEffect(() => {
     // Fetch user details (Replace with your API call)
     const fetchUser = async () => {
-      setUser(JSON.parse(sessionStorage.getItem('user')));
+      setUser(JSON.parse(sessionStorage.getItem("user")));
     };
-    
+
     fetchUser();
-}, []);
+  }, []);
 
-if (!user) {
-    return <div className="text-center p-10">Loading...</div>;
-}
+  if (!user) {
+    return <Loader />;
+  }
 
-console.log(user.user);
+  const email = user?.user?.userEmail;
+  const roleLabel = user?.user?.userRole == "seller" ? "Seller" : "Buyer";
+
   return (
-    <div className="max-w-2xl mx-auto bg-gray-800 shadow-md rounded-lg p-6 text-white">
-      {/* Profile Header */}
-      <div className="flex flex-col items-center">
-        <img src={"https://randomuser.me/api/portraits/men/75.jpg"} alt="User Avatar" className="w-24 h-24 rounded-full border-2 border-gray-300" />
-      </div>
+    <Box maxW="2xl">
+      <PageHeader title="Profile" description="Your account details." />
+      <Card.Root variant="outline" bg="bg.panel" overflow="hidden">
+        <Box h={24} bgGradient="to-r" gradientFrom="brand.600" gradientTo="brand.300" />
+        <Card.Body gap={6} mt={-12}>
+          <HStack justify="space-between" align="end" flexWrap="wrap" gap={4}>
+            <Stack gap={3}>
+              <Avatar.Root size="2xl" css={{ outlineWidth: "4px", outlineColor: "var(--chakra-colors-bg-panel)", outlineStyle: "solid" }}>
+                <Avatar.Fallback name={email?.split("@")[0]} />
+              </Avatar.Root>
+              <Stack gap={1}>
+                <Heading as="h2" size="xl">
+                  {email?.split("@")[0]}
+                </Heading>
+                <Box>
+                  <Badge colorPalette="brand" variant="subtle">
+                    {roleLabel}
+                  </Badge>
+                </Box>
+              </Stack>
+            </Stack>
+            <Button variant="outline" onClick={() => navigate("/dashboard/edit-profile")}>
+              <Pencil /> Edit Profile
+            </Button>
+          </HStack>
 
-      {/* User Details */}
-      <div className="mt-6 space-y-4">
-        <div className="flex items-center space-x-3">
-          <Mail className="text-white" size={20} />
-          <p className="text-white"><strong>Email:</strong> {user?.user?.userEmail}</p>
-        </div>
-        <div className="flex items-center space-x-3">
-          <Briefcase className="text-white" size={20} />
-          <p className="text-white"><strong>Role:</strong> {user?.user?.userRole == 'seller' ? "Seller" : "Buyer"}</p>
-        </div>
-      </div>
-
-      {/* Edit Profile Button */}
-      <div className="mt-6 text-center">
-        <button 
-          className="bg-orange-400 hover:bg-orange-500 text-white px-4 py-2 rounded-md flex items-center gap-2"
-          onClick={() => navigate("/dashboard/edit-profile")}
-        >
-          <Pencil size={16} /> Edit Profile
-        </button>
-      </div>
-    </div>
+          <DataList.Root orientation="horizontal" size="lg">
+            <DataList.Item>
+              <DataList.ItemLabel>
+                <HStack gap={2}>
+                  <Mail size={16} /> Email
+                </HStack>
+              </DataList.ItemLabel>
+              <DataList.ItemValue>{email}</DataList.ItemValue>
+            </DataList.Item>
+            <DataList.Item>
+              <DataList.ItemLabel>
+                <HStack gap={2}>
+                  <Briefcase size={16} /> Role
+                </HStack>
+              </DataList.ItemLabel>
+              <DataList.ItemValue>{roleLabel}</DataList.ItemValue>
+            </DataList.Item>
+          </DataList.Root>
+        </Card.Body>
+      </Card.Root>
+    </Box>
   );
 }

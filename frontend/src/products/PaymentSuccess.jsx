@@ -1,34 +1,36 @@
 import React from "react";
+import { Button, Card, Center, Flex, Heading, HStack, Text } from "@chakra-ui/react";
+import { CircleCheckBig } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const PaymentSuccess = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white p-6">
-      <div className="bg-gray-800 p-8 rounded-lg shadow-lg text-center">
-        <h1 className="text-4xl font-bold text-green-400">Payment Successful! 🎉</h1>
-        <p className="text-gray-300 mt-4 text-lg">
-          Thank you for your purchase! Your payment has been received successfully.
-        </p>
-        <p className="text-gray-400 mt-2">You will receive a confirmation email shortly.</p>
-
-        <div className="mt-6">
-          <button
-            onClick={() => navigate("/orders")}
-            className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded-md shadow-md transition-all duration-200"
-          >
-            View Orders
-          </button>
-          <button
-            onClick={() => navigate("/home")}
-            className="ml-4 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-md shadow-md transition-all duration-200"
-          >
-            Back to Home
-          </button>
-        </div>
-      </div>
-    </div>
+    <Center minH="70vh" px={4} py={12}>
+      <Card.Root maxW="lg" w="full" variant="outline" bg="bg.panel" textAlign="center">
+        <Card.Body gap={4} alignItems="center" p={{ base: 6, md: 10 }}>
+          <Flex boxSize={16} rounded="full" bg="green.subtle" color="green.fg" align="center" justify="center" animationName="scale-in" animationDuration="slow">
+            <CircleCheckBig size={32} />
+          </Flex>
+          <Heading as="h1" size="2xl">
+            Payment Successful!
+          </Heading>
+          <Text color="fg.muted" textStyle="lg">
+            Thank you for your purchase! Your payment has been received successfully.
+          </Text>
+          <Text color="fg.subtle">You will receive a confirmation email shortly.</Text>
+          <HStack gap={3} mt={4} flexWrap="wrap" justify="center">
+            <Button colorPalette="brand" onClick={() => navigate("/orders")}>
+              View Orders
+            </Button>
+            <Button variant="outline" onClick={() => navigate("/home")}>
+              Back to Home
+            </Button>
+          </HStack>
+        </Card.Body>
+      </Card.Root>
+    </Center>
   );
 };
 

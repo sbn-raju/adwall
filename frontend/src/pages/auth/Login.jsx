@@ -1,126 +1,111 @@
 import React, { useState } from "react";
-import BASE_URI from "../../utils/base_uri";
+import { Alert, Button, Field, Input, Link, Stack } from "@chakra-ui/react";
 import toast from "react-hot-toast";
-import Loader from "../../components/Loader";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
+import BASE_URI from "../../utils/base_uri";
 import { useAuth } from "../../hooks/AuthHooks";
-import { useNavigate } from "react-router-dom";
+import AuthShell from "./AuthShell";
 
-const RegisterPage = () => {
+const LoginPage = () => {
   //This are the email and the password states.
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  //This are the state of the loading and error 
-  const[isLoading, setIsLoading] = useState();
-  const[error, setError] = useState();
+  //This are the state of the loading and error
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState();
 
   //Geting the Login function in the auth state.
   const { login } = useAuth();
   const navigate = useNavigate();
 
-
-  const handleSubmit = async(e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    
+
     try {
       const response = await fetch(`${BASE_URI}/auth/login`, {
         method: "POST",
-        headers:{
-          'Content-Type' : 'application/json'
+        headers: {
+          "Content-Type": "application/json",
         },
         credentials: "include",
-        body: JSON.stringify({email, password})
-      })
+        body: JSON.stringify({ email, password }),
+      });
 
       const result = await response.json();
-      if(result.success){
+      if (result.success) {
         setEmail("");
         setPassword("");
         login(result.data);
-        toast.success(result.message || "Login is successfull")
+        toast.success(result.message || "Login is successfull");
         navigate("/home");
       }
     } catch (error) {
       console.log(error.message || error);
       setError(error.message || "Something Went wrong");
-    }finally{
+    } finally {
       setIsLoading(false);
     }
-    
   };
 
-
-
-  if(isLoading){
-    return (
-      <Loader/>
-    )
-  }
-
   return (
-    <div className="flex min-h-screen bg-gray-900">
-      {/* Left Section - Logo */}
-      <div className="hidden md:flex flex-col items-center justify-center w-1/2 bg-blue-500 text-white p-10">
-        <img src="/images/AdWall.png" alt="Logo" className="w-32 h-32 mb-4" />
-        <h1 className="text-3xl font-bold">Welcome to Our Platform</h1>
-        <p className="text-lg mt-2">Join us today!</p>
-      </div>
+    <AuthShell
+      title="Login"
+      subtitle="Welcome back. Sign in to manage your walls."
+      footer={
+        <>
+          Don't have an account?{" "}
+          <Link asChild color="brand.fg" fontWeight="semibold">
+            <RouterLink to="/register">Register</RouterLink>
+          </Link>
+        </>
+      }
+    >
+      <form onSubmit={handleSubmit}>
+        <Stack gap={5}>
+          <Field.Root required>
+            <Field.Label>
+              Email <Field.RequiredIndicator />
+            </Field.Label>
+            <Input
+              type="email"
+              size="lg"
+              placeholder="you@company.com"
+              autoComplete="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </Field.Root>
 
-      {/* Right Section - Register Form */}
-      <div className="flex items-center justify-center w-full md:w-1/2 p-8">
-        <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
-          <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
+          <Field.Root required>
+            <Field.Label>
+              Password <Field.RequiredIndicator />
+            </Field.Label>
+            <Input
+              type="password"
+              size="lg"
+              placeholder="Enter your password"
+              autoComplete="current-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </Field.Root>
+
+          {error && (
+            <Alert.Root status="error" size="sm">
+              <Alert.Indicator />
+              <Alert.Title>{error}</Alert.Title>
+            </Alert.Root>
+          )}
+
+          <Button type="submit" colorPalette="brand" size="lg" loading={isLoading} loadingText="Signing in…">
             Login
-          </h2>
-          <form onSubmit={handleSubmit}>
-            
-
-            {/* Email Input */}
-            <div className="mb-4">
-              <label className="block text-gray-700">Email</label>
-              <input
-                type="email"
-                className="w-full px-4 py-2 mt-2 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
-                placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
-
-            {/* Password Input */}
-            <div className="mb-4">
-              <label className="block text-gray-700">Password</label>
-              <input
-                type="password"
-                className="w-full px-4 py-2 mt-2 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
-
-           
-            {/* Submit Button */}
-            <button
-              type="submit"
-              className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition duration-200"
-            >
-              Login
-            </button>
-          </form>
-
-          {/* Already have an account */}
-          <p className="mt-4 text-sm text-gray-600 text-center">
-            Already don't have an account?
-            <a href="/register" className="text-blue-500 ml-1">Register</a>
-          </p>
-        </div>
-      </div>
-    </div>
+          </Button>
+        </Stack>
+      </form>
+    </AuthShell>
   );
 };
 
-export default RegisterPage;
+export default LoginPage;

@@ -1,21 +1,27 @@
 import React, { useState } from "react";
-import { Disclosure } from "@headlessui/react";
-import { useNavigate, useParams } from 'react-router-dom'
+import { Button, Card, Container, Field, Heading, Input, SimpleGrid, Stack, Text } from "@chakra-ui/react";
+import { useNavigate, useParams } from "react-router-dom";
+import BackButton from "../components/common/BackButton";
+
+const fields = [
+  { name: "name", label: "Full Name", type: "text", autoComplete: "name" },
+  { name: "email", label: "Email", type: "email", autoComplete: "email" },
+  { name: "phone", label: "Phone No.", type: "tel", autoComplete: "tel" },
+  { name: "address", label: "Address", type: "text", autoComplete: "street-address" },
+];
 
 const CheckoutPage = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    phone:"",
+    phone: "",
     address: "",
     city: "",
     zip: "",
-    paymentMode: ""
+    paymentMode: "",
   });
   const navigate = useNavigate();
   const { id } = useParams();
-
-
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -24,126 +30,67 @@ const CheckoutPage = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     const address = {
-      addressLine : formData.address,
+      addressLine: formData.address,
       city: formData.city,
-      zip: formData.zip
-    }
-    // name: "",
-    // email: "",
-    // phone:"",
-    // address: "",
-    // city: "",
-    // zip: "",
-    // paymentMode: ""
+      zip: formData.zip,
+    };
     const newFormData = {
       address,
       name: formData.name,
       phone: formData.phone,
       paymentMode: formData.paymentMode,
       email: formData.email,
-    }
+    };
 
-    console.log(newFormData);
-
-    navigate(`/payment/${id}`, {state: newFormData});
+    navigate(`/payment/${id}`, { state: newFormData });
   };
 
-
-  
-
-
-  
-  const handleBack = (e) =>{
-       navigate(-1);
-  }
-
   return (
-    <div className="min-h-screen bg-gray-900 flex justify-center items-center p-4">
-      <div className="bg-gray-800 shadow-lg rounded-lg p-6 max-w-3xl w-full text-white">
-      <div>
-        <button onClick={handleBack} className="py-2 px-6 mb-2 bg-orange-400 hover:bg-orange-500 rounded-md">
-          Back
-        </button>
-      </div>
-        <h2 className="text-3xl font-bold mb-6 text-center">Billing Details</h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block">Full Name</label>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              className="w-full border rounded-lg p-2 bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
-          <div>
-            <label className="block">Email</label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              className="w-full border rounded-lg p-2 bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
-          <div>
-            <label className="block">Phone No.</label>
-            <input
-              type="phone"
-              name="phone"
-              value={formData.phone}
-              onChange={handleChange}
-              className="w-full border rounded-lg p-2 bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
-          <div>
-            <label className="block">Address</label>
-            <input
-              type="text"
-              name="address"
-              value={formData.address}
-              onChange={handleChange}
-              className="w-full border rounded-lg p-2 bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block">City</label>
-              <input
-                type="text"
-                name="city"
-                value={formData.city}
-                onChange={handleChange}
-                className="w-full border rounded-lg p-2 bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-            <div>
-              <label className="block">ZIP Code</label>
-              <input
-                type="text"
-                name="zip"
-                value={formData.zip}
-                onChange={handleChange}
-                className="w-full border rounded-lg p-2 bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-          </div>
-          <button
-            type="submit"
-            className="w-full bg-orange-400 text-white p-3 rounded-lg hover:bg-orange-500 transition"
-          >
-            Complete Payment
-          </button>
-        </form>
-      </div>
-    </div>
+    <Container maxW="2xl" py={{ base: 8, md: 12 }}>
+      <BackButton mb={6} />
+      <Card.Root variant="outline" bg="bg.panel">
+        <Card.Header gap={1}>
+          <Text textStyle="xs" fontWeight="semibold" letterSpacing="wider" textTransform="uppercase" color="brand.fg">
+            Step 1 of 2
+          </Text>
+          <Heading as="h1" size="2xl" letterSpacing="tight">
+            Billing Details
+          </Heading>
+          <Text color="fg.muted">We'll use these details for your invoice and payment.</Text>
+        </Card.Header>
+        <Card.Body>
+          <form onSubmit={handleSubmit}>
+            <Stack gap={5}>
+              {fields.map((f) => (
+                <Field.Root key={f.name} required>
+                  <Field.Label>
+                    {f.label} <Field.RequiredIndicator />
+                  </Field.Label>
+                  <Input type={f.type} name={f.name} autoComplete={f.autoComplete} value={formData[f.name]} onChange={handleChange} />
+                </Field.Root>
+              ))}
+              <SimpleGrid columns={{ base: 1, sm: 2 }} gap={4}>
+                <Field.Root required>
+                  <Field.Label>
+                    City <Field.RequiredIndicator />
+                  </Field.Label>
+                  <Input name="city" autoComplete="address-level2" value={formData.city} onChange={handleChange} />
+                </Field.Root>
+                <Field.Root required>
+                  <Field.Label>
+                    ZIP Code <Field.RequiredIndicator />
+                  </Field.Label>
+                  <Input name="zip" autoComplete="postal-code" value={formData.zip} onChange={handleChange} />
+                </Field.Root>
+              </SimpleGrid>
+              <Button type="submit" colorPalette="brand" size="lg" mt={2}>
+                Continue to Payment
+              </Button>
+            </Stack>
+          </form>
+        </Card.Body>
+      </Card.Root>
+    </Container>
   );
 };
 

@@ -1,10 +1,16 @@
 import React from "react";
+import { Center, Spinner, Text, VStack } from "@chakra-ui/react";
 
-const Loader = () => {
+const Loader = ({ label = "Loading…" }) => {
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-900">
-      <div className="w-16 h-16 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin"></div>
-    </div>
+    <Center minH="60vh" w="full">
+      <VStack gap={3}>
+        <Spinner size="xl" color="brand.solid" borderWidth="3px" />
+        <Text color="fg.muted" textStyle="sm">
+          {label}
+        </Text>
+      </VStack>
+    </Center>
   );
 };
 

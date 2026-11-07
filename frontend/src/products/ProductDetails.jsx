@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
+import { Box, Button, Container, DataList, Grid, Heading, Image, Separator, Stack, Text } from "@chakra-ui/react";
 import { useNavigate, useParams } from "react-router-dom";
+import toast from "react-hot-toast";
 import BASE_URI from "../utils/base_uri";
 import Loader from "../components/Loader";
+import AvailabilityBadge from "../components/common/AvailabilityBadge";
+import BackButton from "../components/common/BackButton";
 
 const ProductDetails = () => {
   const navigate = useNavigate();
@@ -9,28 +13,22 @@ const ProductDetails = () => {
   const [product, setProduct] = useState([]);
 
   const { product_id } = useParams();
-  console.log(product_id);
 
   //Getting the product id
   const singleProduct = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch(
-        `${BASE_URI}/product/single?product_id=${product_id}`,
-        {
-          method: "GET",
-          credentials: "include",
-        }
-      );
+      const response = await fetch(`${BASE_URI}/product/single?product_id=${product_id}`, {
+        method: "GET",
+        credentials: "include",
+      });
 
       const result = await response.json();
 
       if (result.success) {
         setProduct(result?.data[0]);
       } else {
-        toast.error(
-          "Unexcepted response from server" || `${error?.message || error}`
-        );
+        toast.error("Unexcepted response from server");
       }
     } catch (error) {
       console.error("Error fetching ads:", error);
@@ -48,48 +46,63 @@ const ProductDetails = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 p-12 flex justify-center">
-      <div className="bg-gray-800 shadow-lg rounded-lg max-w-5xl w-full flex flex-col md:flex-row">
-        {/* Left Container - Product Images */}
-        <div className="md:w-1/2 p-6 flex justify-center items-center">
-          <img
-            src={product.image_link}
-            alt={product.name}
-            className="w-full h-auto object-cover rounded-lg"
-          />
-        </div>
+    <Container maxW="6xl" py={{ base: 8, md: 12 }}>
+      <BackButton mb={6} />
+      <Grid templateColumns={{ base: "1fr", md: "1.2fr 1fr" }} gap={{ base: 8, md: 12 }} alignItems="start">
+        <Image
+          src={product.image_link}
+          alt={product.name}
+          w="full"
+          aspectRatio={4 / 3}
+          objectFit="cover"
+          rounded="2xl"
+          borderWidth="1px"
+          bg="bg.muted"
+          shadow="lg"
+        />
 
-        {/* Right Container - Product Details */}
-        <div className="md:w-1/2 p-6 flex flex-col justify-center">
-          <h1 className="text-3xl font-bold text-white mb-2">{product.name}</h1>
-          <p className="text-white text-lg mb-4">{product.description}</p>
-          <p className="text-white">
-            <strong>Location:</strong> {product.location}
-          </p>
-          <p className="text-white">
-            <strong>Dimensions:</strong> {product.dimension}
-          </p>
-          <p
-            className={`w-1/2 text-center mt-1 px-2 py-1 rounded-full font-semibold ${
-              !product.is_available
-                ? "text-red-600 bg-red-200"
-                : "text-green-600 bg-green-200"
-            }`}
-          >
-            {!product.is_available ? "Not Avialable" : "Avialable"}
-          </p>
-          <p className="text-white font-bold text-2xl mt-4">
-            ₹ {product.price}
-          </p>
-          <button
-            className="mt-6 bg-orange-400 text-white px-6 py-3 rounded-lg hover:bg-orange-500 transition w-full"
-            onClick={() => navigate(`/checkout/${product.id}`)}
-          >
-            Rent This Wall
-          </button>
-        </div>
-      </div>
-    </div>
+        <Stack gap={6}>
+          <Stack gap={3}>
+            <Box>
+              <AvailabilityBadge available={!!product.is_available} />
+            </Box>
+            <Heading as="h1" size="3xl" letterSpacing="tight">
+              {product.name}
+            </Heading>
+            <Text textStyle="lg" color="fg.muted">
+              {product.description}
+            </Text>
+          </Stack>
+
+          <DataList.Root orientation="horizontal" size="lg">
+            <DataList.Item>
+              <DataList.ItemLabel>Location</DataList.ItemLabel>
+              <DataList.ItemValue>{product.location}</DataList.ItemValue>
+            </DataList.Item>
+            <DataList.Item>
+              <DataList.ItemLabel>Dimensions</DataList.ItemLabel>
+              <DataList.ItemValue>{product.dimension}</DataList.ItemValue>
+            </DataList.Item>
+          </DataList.Root>
+
+          <Separator />
+
+          <Stack gap={4}>
+            <Box>
+              <Text textStyle="sm" color="fg.muted">
+                Price
+              </Text>
+              <Text textStyle="3xl" fontWeight="bold" color="brand.fg">
+                ₹ {product.price}
+              </Text>
+            </Box>
+            <Button colorPalette="brand" size="xl" w="full" onClick={() => navigate(`/checkout/${product.id}`)}>
+              Rent This Wall
+            </Button>
+          </Stack>
+        </Stack>
+      </Grid>
+    </Container>
   );
 };
 

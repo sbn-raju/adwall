@@ -1,156 +1,144 @@
 import React, { useState } from "react";
-import { Link, Outlet } from "react-router-dom";
+import {
+  Box,
+  Button,
+  CloseButton,
+  Drawer,
+  Flex,
+  HStack,
+  IconButton,
+  Portal,
+  Separator,
+  Stack,
+  Text,
+} from "@chakra-ui/react";
+import { NavLink, Outlet } from "react-router-dom";
 import {
   Menu,
-  X,
   LayoutDashboard,
-  ShoppingCart,
   User,
   LogOut,
   BadgeIndianRupee,
   BadgeCheck,
-  ShoppingBag,
   History,
   ImagePlus,
-  RotateCcw,
-  BrickWall
+  BrickWall,
 } from "lucide-react";
 import Header from "../components/Header";
 import { useAuth } from "../hooks/AuthHooks";
 
-export default function DashboardLayout() {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+const buyerOptions = [
+  { id: 0, icon: <LayoutDashboard />, optionName: "Overview", link: "/buyer/dashboard" },
+  { id: 1, icon: <User />, optionName: "Profile", link: "/buyer/dashboard/profile" },
+  { id: 2, icon: <BadgeIndianRupee />, optionName: "Transactions", link: "/buyer/dashboard/tansactions" },
+  { id: 4, icon: <History />, optionName: "Rented Walls", link: "/buyer/dashboard/rented-walls" },
+];
 
-  const role = sessionStorage.getItem("userRole");
-  const buyerOptions = [
-    {
-      id: 1,
-      icon: <User className="mr-2" />,
-      optionName: "Profile",
-      link: "/buyer/dashboard/profile",
-    },
-    {
-      id: 2,
-      icon: <BadgeIndianRupee className="mr-2" />,
-      optionName: "Transactions",
-      link: "/buyer/dashboard/tansactions",
-    },
-    
-    {
-      id: 4,
-      icon: <History className="mr-2" />,
-      optionName: "Rented Walls",
-      link: "/buyer/dashboard/rented-walls",
-    },
-  ];
+const sellerOptions = [
+  { id: 0, icon: <LayoutDashboard />, optionName: "Overview", link: "/seller/dashboard" },
+  { id: 1, icon: <User />, optionName: "Profile", link: "/seller/dashboard/profile" },
+  { id: 2, icon: <ImagePlus />, optionName: "Post Ad", link: "/seller/dashboard/add/wall" },
+  { id: 5, icon: <BrickWall />, optionName: "Walls", link: "/seller/dashboard/walls" },
+  { id: 4, icon: <BadgeCheck />, optionName: "Walls on the Rent", link: "/seller/dashboard/rented-walls" },
+];
 
-  const sellerOptions = [
-    {
-      id: 1,
-      icon: <User className="mr-2" />,
-      optionName: "Profile",
-      link: "seller/dashboard/profile",
-    },
-    {
-      id: 2,
-      icon: <ImagePlus className="mr-2" />,
-      optionName: "Post Ad",
-      link: "/seller/dashboard/add/wall",
-    },
-    {
-      id: 5,
-      icon: <BrickWall  className="mr-2" />,
-      optionName: "Walls",
-      link: "/seller/dashboard/walls",
-    },
-    {
-      id: 4,
-      icon: <BadgeCheck className="mr-2" />,
-      optionName: "Walls on the Rent",
-      link: "/seller/dashboard/rented-walls",
-    },
-    
-  ];
-
-  const { logout } = useAuth();
-
-  const handleLogout = () =>{
-    logout();
-  }
+function SidebarNav({ role, onNavigate, onLogout }) {
+  const options = role === "seller" ? sellerOptions : buyerOptions;
 
   return (
-    <div className="bg-gray-900">
-      <Header />
-      <div className="flex min-h-screen  bg-gray-900 w-full">
-        {/* Sidebar */}
-        <div
-          className={`fixed inset-y-0 left-0 z-50 bg-white shadow-md w-64 transform ${
-            isSidebarOpen ? "translate-x-0" : "-translate-x-64"
-          } transition-transform lg:relative lg:translate-x-0`}
+    <Stack as="nav" aria-label="Dashboard" gap={1} h="full">
+      <Text px={3} pb={2} textStyle="xs" fontWeight="semibold" color="fg.subtle" textTransform="uppercase" letterSpacing="wider">
+        {role === "seller" ? "Seller tools" : "Buyer tools"}
+      </Text>
+      {options.map((option) => (
+        <Button
+          key={option.id}
+          asChild
+          variant="ghost"
+          justifyContent="start"
+          gap={3}
+          color="fg.muted"
+          _currentPage={{ bg: "brand.subtle", color: "brand.fg", fontWeight: "semibold" }}
         >
-          <div className="flex items-center justify-between p-4 border-b lg:hidden">
-            <h2 className="text-lg font-semibold">Dashboard</h2>
-            <button
-              onClick={() => setIsSidebarOpen(false)}
-              className="text-gray-500 hover:text-orange-700"
-            >
-              {/* <X size={24} /> */}
-              Close
-            </button>
-          </div>
-          <nav className="p-4 bg-gray-800 h-full">
-            <ul className="space-y-4">
-              {role === "seller"
-                ? sellerOptions?.map((option) => (
-                    <li key={option.id}>
-                      <Link
-                        to={option.link}
-                        className="flex items-center p-2 text-white hover:bg-gray-500 rounded-md"
-                      >
-                        {option.icon} {option.optionName}
-                      </Link>
-                    </li>
-                  ))
-                : buyerOptions?.map((option) => (
-                    <li key={option.id}>
-                      <Link
-                        to={option.link}
-                        className="flex items-center p-2 text-white hover:bg-gray-500 rounded-md"
-                      >
-                        {option.icon} {option.optionName}
-                      </Link>
-                    </li>
-                  ))}
-              <li>
-                <button onClick={handleLogout} className="flex items-center p-2 text-red-600 hover:bg-red-100 w-full rounded-md">
-                  <LogOut className="mr-2" /> Logout
-                </button>
-              </li>
-            </ul>
-          </nav>
-        </div>
+          <NavLink to={option.link} end onClick={onNavigate}>
+            {option.icon}
+            {option.optionName}
+          </NavLink>
+        </Button>
+      ))}
+      <Separator my={3} />
+      <Button variant="ghost" colorPalette="red" justifyContent="start" gap={3} onClick={onLogout}>
+        <LogOut /> Logout
+      </Button>
+    </Stack>
+  );
+}
 
-        {/* Main Content */}
-        <div className="flex-1 flex flex-col">
-          {/* Top Navbar */}
-          <header className="flex items-center justify-between bg-white shadow-md p-4 lg:hidden">
-            <button
-              onClick={() => setIsSidebarOpen(true)}
-              className="text-gray-600"
-            >
-              {/* <Menu size={24} /> */}
-              Menu
-            </button>
-            <h2 className="text-lg font-semibold">Dashboard</h2>
-            <div className="w-6"></div> {/* Placeholder for balance */}
-          </header>
+export default function DashboardLayout() {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const role = sessionStorage.getItem("userRole");
+  const { logout } = useAuth();
 
-          {/* Main Page Content */}
-          <main className="flex-1 p-6">
+  const handleLogout = () => {
+    setIsSidebarOpen(false);
+    logout();
+  };
+
+  return (
+    <Flex direction="column" minH="100vh" bg="bg">
+      <Header />
+
+      <Flex flex="1" w="full">
+        {/* Desktop sidebar */}
+        <Box
+          as="aside"
+          display={{ base: "none", lg: "block" }}
+          w="64"
+          flexShrink={0}
+          borderEndWidth="1px"
+          bg="bg.subtle"
+          p={4}
+          position="sticky"
+          top="65px"
+          h="calc(100vh - 65px)"
+          overflowY="auto"
+        >
+          <SidebarNav role={role} onLogout={handleLogout} />
+        </Box>
+
+        {/* Mobile drawer */}
+        <Drawer.Root open={isSidebarOpen} onOpenChange={(e) => setIsSidebarOpen(e.open)} placement="start">
+          <Portal>
+            <Drawer.Backdrop />
+            <Drawer.Positioner>
+              <Drawer.Content maxW="72">
+                <Drawer.Header>
+                  <Drawer.Title>Dashboard</Drawer.Title>
+                </Drawer.Header>
+                <Drawer.Body>
+                  <SidebarNav role={role} onNavigate={() => setIsSidebarOpen(false)} onLogout={handleLogout} />
+                </Drawer.Body>
+                <Drawer.CloseTrigger asChild>
+                  <CloseButton size="sm" />
+                </Drawer.CloseTrigger>
+              </Drawer.Content>
+            </Drawer.Positioner>
+          </Portal>
+        </Drawer.Root>
+
+        <Flex direction="column" flex="1" minW={0}>
+          <HStack display={{ base: "flex", lg: "none" }} px={4} py={3} borderBottomWidth="1px" gap={3}>
+            <IconButton variant="outline" size="sm" aria-label="Open dashboard menu" onClick={() => setIsSidebarOpen(true)}>
+              <Menu />
+            </IconButton>
+            <Text fontWeight="semibold">Dashboard</Text>
+          </HStack>
+
+          <Box as="main" flex="1" p={{ base: 4, md: 8 }} maxW="6xl" w="full" mx="auto">
             <Outlet />
-          </main>
-        </div>
-      </div>
-    </div>
+          </Box>
+        </Flex>
+      </Flex>
+    </Flex>
   );
 }

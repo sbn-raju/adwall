@@ -1,16 +1,17 @@
 import React from "react";
+import { Box, Flex } from "@chakra-ui/react";
+import { Outlet } from "react-router-dom";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
-import { Outlet } from "react-router-dom";
 
 export const Layout = () => {
   return (
-    <>
-      <div className="bg-gray-900">
+    <Flex direction="column" minH="100vh" bg="bg">
       <Header />
-      <Outlet />
+      <Box as="main" flex="1">
+        <Outlet />
+      </Box>
       <Footer />
-      </div>
-    </>
+    </Flex>
   );
 };
