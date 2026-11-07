@@ -1,0 +1,46 @@
+{
+  "name": "epam-project",
+  "version": "1.0.0",
+  "description": "Welcome to **AdWall**, a web application designed to connect **property owners** and **advertisers** seamlessly. If you have a **compound wall, building facade, or any outdoor space**, you can **rent it out** as an advertising space and earn passive income. On the other hand, businesses and advertisers looking for **high-visibility locations** can easily browse and book spaces for their marketing campaigns.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon src/index.js",
+    "start": "node dist/index.js",
+    "build": "babel src --out-dir dist",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "babel": {
+    "presents": [
+      "@babel/preset-env"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sbn-raju/AdWall-Epam.git"
+  },
+  "keywords": [],
+  "author": "SBN RAJU",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/sbn-raju/AdWall-Epam/issues"
+  },
+  "homepage": "https://github.com/sbn-raju/AdWall-Epam#readme",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.49.1",
+    "bcryptjs": "^3.0.2",
+    "cloudinary": "^2.5.1",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.1",
+    "razorpay": "^2.9.6"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.28.0",
+    "@babel/core": "^7.28.0",
+    "@babel/preset-env": "^7.28.0"
+  }
+}
